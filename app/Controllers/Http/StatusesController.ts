@@ -1,12 +1,12 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext';
-import Branch from "App/Models/Branch";
+import Status from "App/Models/Status";
 export default class StatusesController {
   public async index({}: HttpContextContract) {
-    const branches = await Branch.all();
+    const statuses = await Status.all();
     return {
       status: true,
-      message: "Branches fetched successfully",
-      data: branches
+      message: "Statuses fetched successfully",
+      data: statuses
     }
   }
 }

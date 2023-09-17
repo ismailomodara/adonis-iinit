@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
-import {BaseModel, column, HasMany} from '@ioc:Adonis/Lucid/Orm'
+import {BaseModel, column, HasMany, manyToMany,ManyToMany } from '@ioc:Adonis/Lucid/Orm'
 import {hasMany} from "@adonisjs/lucid/build/src/Orm/Decorators";
 import Employee from "App/Models/Employee";
+import Permission from "App/Models/Permission";
 
 export default class Role extends BaseModel {
   @column({ isPrimary: true })
@@ -21,4 +22,9 @@ export default class Role extends BaseModel {
 
   @hasMany(() => Employee)
   public employee: HasMany<typeof Employee>
+
+  @manyToMany(() => Permission, {
+    pivotTable: 'role_permissions',
+  })
+  public permissions: ManyToMany<typeof Permission>
 }

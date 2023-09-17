@@ -42,4 +42,5 @@ Server.middleware.register([
 |
 */
 Server.middleware.registerNamed({
+  permission: () => import('App/Middleware/Permission')
 })

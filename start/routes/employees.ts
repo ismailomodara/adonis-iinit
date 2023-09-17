@@ -9,6 +9,8 @@ Route.group(() => {
 
   Route.put('/:id', 'EmployeesController.update').as('update')
 
+  Route.put('/:id/role', 'EmployeesController.role').as('update.role')
+
   Route.delete('/:id', 'EmployeesController.destroy').as('destroy')
 
 }).prefix("/employees").as("employees")

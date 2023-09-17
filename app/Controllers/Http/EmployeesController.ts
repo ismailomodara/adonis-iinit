@@ -1,9 +1,16 @@
 import type {HttpContextContract} from '@ioc:Adonis/Core/HttpContext'
 import Employee from "App/Models/Employee";
+import {rules, schema} from "@ioc:Adonis/Core/Validator";
 
 export default class EmployeesController {
   public async index({}: HttpContextContract) {
-    return ""
+    return Employee
+      .query()
+      .preload("role")
+      .preload("status")
+      .preload("branch", (branch) => {
+        branch.where("id", 1)
+      });
   }
 
   public async store({ request }: HttpContextContract) {
@@ -19,15 +26,57 @@ export default class EmployeesController {
     return employee
   }
 
-  public async show({}: HttpContextContract) {
-
+  public async show({ params }: HttpContextContract) {
+    try {
+      const employee = await Employee.findOrFail(params.id);
+      return {
+        status: true,
+        message: "Employee details fetched",
+        data: employee
+      }
+    } catch (e) {
+      return {
+        status: false,
+        message: "Employee not found"
+      }
+    }
   }
 
+  public async update({ request, params }: HttpContextContract) {
+    const data = request.only(['firstname', 'lastname', 'password'])
 
-  public async update({ request }: HttpContextContract) {
-    const data = request.only(['firstname', 'lastname', 'branch_id',  'manager_id', 'password'])
+    try {
+      const employee = await Employee.findOrFail(params.id);
+      await employee.merge(data).save();
+      return {
+        status: true,
+        message: "Employee details updated",
+        data: employee
+      }
+    } catch (e) {
+      return {
+        status: false,
+        message: "Employee not found"
+      }
+    }
+  }
 
-    return Employee.updateOrCreate(data, data)
+  public async role({ request, params }: HttpContextContract) {
+    const roleSchema = schema.create({
+      role_id: schema.number([ rules.exists({ table: 'roles', column: 'id' })])
+    })
+    const data = await request.validate({ schema: roleSchema })
+
+    try {
+      const employee = await Employee.findOrFail(params.id);
+      await employee.merge(data).save();
+      return employee
+    } catch (e) {
+      return {
+        status: false,
+        message: "Employee not found"
+      }
+    }
   }
 
   public async destroy({}: HttpContextContract) {}

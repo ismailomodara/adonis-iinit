@@ -1,22 +1,20 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, BelongsTo, HasOne, ManyToMany } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, beforeSave, belongsTo, BelongsTo} from '@ioc:Adonis/Lucid/Orm'
 import {attachment, AttachmentContract} from "@ioc:Adonis/Addons/AttachmentLite"
-import {beforeSave, belongsTo, hasOne, manyToMany} from "@adonisjs/lucid/build/src/Orm/Decorators";
-import Role from "App/Models/Role";
-import Status from "App/Models/Status";
 import Branch from "App/Models/Branch";
-import Sale from "App/Models/Sale";
+import Status from "App/Models/Status";
+import Role from "App/Models/Role";
 import Hash from "@ioc:Adonis/Core/Hash";
 
 export default class Employee extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
-  @column()
-  public role_id: number
+  @column({ columnName: 'role_id' })
+  public roleId: number
 
-  @column()
-  public status_id: number
+  @column({ columnName: 'status_id' })
+  public statusId: number
 
   @column({ columnName: 'first_name' })
   public firstname: string
@@ -36,8 +34,8 @@ export default class Employee extends BaseModel {
   @column()
   public manager_id: number | null
 
-  @column()
-  public branch_id: number
+  @column({ columnName: 'branch_id' })
+  public branchId: number
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
@@ -45,8 +43,6 @@ export default class Employee extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  @belongsTo(() => Role)
-  public role: BelongsTo<typeof Role>
 
   @belongsTo(() => Status)
   public status: BelongsTo<typeof Status>
@@ -54,11 +50,8 @@ export default class Employee extends BaseModel {
   @belongsTo(() => Branch)
   public branch: BelongsTo<typeof Branch>
 
-  @hasOne(() => Employee)
-  public manager: HasOne<typeof Employee>
-
-  @manyToMany(() => Sale)
-  public sale: ManyToMany<typeof Sale>
+  @belongsTo(() => Role)
+  public role: BelongsTo<typeof Role>
 
   @beforeSave()
   public static  async hashPassword(employee: Employee) {

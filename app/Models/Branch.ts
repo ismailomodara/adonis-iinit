@@ -1,6 +1,5 @@
 import { DateTime } from 'luxon'
-import {BaseModel, column, HasOne, HasMany} from '@ioc:Adonis/Lucid/Orm'
-import { hasOne, hasMany } from "@adonisjs/lucid/build/src/Orm/Decorators";
+import {BaseModel, hasOne, HasOne, column} from '@ioc:Adonis/Lucid/Orm';
 import Employee from "App/Models/Employee";
 
 export default class Branch extends BaseModel {
@@ -13,7 +12,7 @@ export default class Branch extends BaseModel {
   @column()
   public code: string
 
-  @column()
+  @column({ columnName: "manager_id" })
   public managerId: number | null
 
   @column.dateTime({ autoCreate: true })
@@ -22,9 +21,9 @@ export default class Branch extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
-  @hasOne(() => Employee)
+  @hasOne(() => Employee, {
+    localKey: "managerId",
+    foreignKey: "id"
+  })
   public manager: HasOne<typeof Employee>
-
-  @hasMany(() => Employee)
-  public employee: HasMany<typeof Employee>
 }

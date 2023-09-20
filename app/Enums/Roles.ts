@@ -4,6 +4,7 @@ enum Roles {
   ACCOUNT ,
   QA ,
   CUSTOMER_SERVICE ,
+  HR ,
 }
 
 export default Roles

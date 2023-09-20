@@ -5,6 +5,8 @@ Route.group(() => {
 
   Route.post('/register', 'AuthController.register').as("register")
 
+  Route.post('/logout', 'AuthController.logout').as("logout")
+
   Route.get('/sign/:id', ({ params }) => {
     return Route.makeSignedUrl('auth.verify', {
       id: params.id,

@@ -1,5 +1,5 @@
-import { DateTime } from 'luxon'
-import { BaseModel, column, beforeSave, belongsTo, BelongsTo} from '@ioc:Adonis/Lucid/Orm'
+import {DateTime} from 'luxon'
+import {BaseModel, beforeSave, belongsTo, BelongsTo, column, computed} from '@ioc:Adonis/Lucid/Orm'
 import {attachment, AttachmentContract} from "@ioc:Adonis/Addons/AttachmentLite"
 import Branch from "App/Models/Branch";
 import Status from "App/Models/Status";
@@ -36,6 +36,11 @@ export default class Employee extends BaseModel {
 
   @column({ columnName: 'branch_id' })
   public branchId: number
+
+  @computed()
+  public get permissions() {
+    return {}
+  }
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

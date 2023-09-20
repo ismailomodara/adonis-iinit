@@ -3,17 +3,26 @@ import Employee from "App/Models/Employee";
 import {rules, schema} from "@ioc:Adonis/Core/Validator";
 
 export default class EmployeesController {
-  public async index({}: HttpContextContract) {
-    return Employee
-      .query()
-      .preload("role")
-      .preload("status")
-      .preload("branch", (branch) => {
-        branch.where("id", 1)
-      });
+  public async index({ bouncer }: HttpContextContract) {
+    try {
+      await bouncer.authorize('getEmployees')
+      return Employee
+        .query()
+        .preload("role")
+        .preload("status")
+        .preload("branch", (branch) => {
+          branch.where("id", 1)
+        });
+    } catch (e) {
+      return {
+        error: e.message
+      }
+    }
   }
 
-  public async store({ request }: HttpContextContract) {
+  public async store({ request, bouncer }: HttpContextContract) {
+    await bouncer.authorize('createEmployee')
+
     const data = request.only(['role_id', 'firstname', 'lastname', 'email', 'branch_id', 'manager_id', 'password']);
 
     // const employee = Employee.create(data)
@@ -26,9 +35,19 @@ export default class EmployeesController {
     return employee
   }
 
-  public async show({ params }: HttpContextContract) {
+  public async show({ params, bouncer }: HttpContextContract) {
     try {
       const employee = await Employee.findOrFail(params.id);
+
+      if (await bouncer.denies('getEmployee', employee)) {
+        return {
+          status: false,
+          error: true,
+          code: "UNAUTHORIZED",
+          message: "You are not authorized to get information"
+        }
+      }
+
       return {
         status: true,
         message: "Employee details fetched",

@@ -13,4 +13,4 @@ Route.group(() => {
 
   Route.delete('/:id', 'EmployeesController.destroy').as('destroy')
 
-}).prefix("/employees").as("employees")
+}).prefix("/employees").as("employees").middleware(["auth"])

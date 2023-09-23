@@ -5,6 +5,10 @@ Route.group(() => {
 
   Route.post('/register', 'AuthController.register').as("register")
 
+  Route.post('/code/send', 'AuthController.code').as("code.send")
+
+  Route.post('/code/verify', 'AuthController.verify').as("code.verify")
+
   Route.post('/logout', 'AuthController.logout').as("logout")
 
   Route.get('/sign/:id', ({ params }) => {

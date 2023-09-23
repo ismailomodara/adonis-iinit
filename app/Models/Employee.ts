@@ -1,10 +1,12 @@
 import {DateTime} from 'luxon'
-import {BaseModel, beforeSave, belongsTo, BelongsTo, column, computed} from '@ioc:Adonis/Lucid/Orm'
+import {BaseModel, beforeSave, belongsTo, BelongsTo, column, computed, hasMany, HasMany} from '@ioc:Adonis/Lucid/Orm'
 import {attachment, AttachmentContract} from "@ioc:Adonis/Addons/AttachmentLite"
 import Branch from "App/Models/Branch";
 import Status from "App/Models/Status";
 import Role from "App/Models/Role";
 import Hash from "@ioc:Adonis/Core/Hash";
+import Token from "App/Models/Token";
+import Verify from "App/Mailers/Verify";
 
 export default class Employee extends BaseModel {
   @column({ isPrimary: true })
@@ -58,10 +60,28 @@ export default class Employee extends BaseModel {
   @belongsTo(() => Role)
   public role: BelongsTo<typeof Role>
 
+  @hasMany(() => Token)
+  public tokens: HasMany<typeof Token>
+
+  @hasMany(() => Token, {
+    onQuery: query  => query.where('type', 'VERIFICATION')
+  })
+  public verificationTokens: HasMany<typeof Token>
+
+  @hasMany(() => Token, {
+    onQuery: query  => query.where('type', 'PASSWORD_RESET')
+  })
+  public passwordResetTokens: HasMany<typeof Token>
+
   @beforeSave()
   public static  async hashPassword(employee: Employee) {
     if (employee.$dirty.password) {
       employee.password = await Hash.make(employee.password)
     }
+  }
+
+  public async sendVerificationMail() {
+    const token = await Token.generateToken(this, "VERIFICATION");
+    await new Verify(this, token).sendLater();
   }
 }

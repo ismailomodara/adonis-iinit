@@ -6,9 +6,6 @@
  */
 
 import Bouncer from '@ioc:Adonis/Addons/Bouncer'
-import Employee from "App/Models/Employee";
-import Roles from "App/Enums/Roles";
-import Logger from "@ioc:Adonis/Core/Logger";
 
 /*
 |--------------------------------------------------------------------------
@@ -45,29 +42,6 @@ import Logger from "@ioc:Adonis/Core/Logger";
 // })
 
 export const { actions } = Bouncer
-  .before((employee: Employee | null, action) => {
-    if(employee && [Roles.MANAGER, Roles.HR].includes(employee.roleId)) {
-      Logger.info(`${employee.email} was authorized to ${action}`)
-      return true
-    }
-  })
-  .after((employee: Employee | null, action, result) => {
-      const type = employee ? employee.email : 'Guest'
-      result.authorized ? Logger.info(`${type} was authorized to ${action}`) : Logger.info(`${type} was denied to ${action}`)
-  })
-
-  /*
-  | Employees
-   */
-  .define('getEmployees', (employee: Employee) => {
-    return Roles.HR === employee.roleId
-  })
-  .define('getEmployee', (employee: Employee, user) => {
-    return employee.id === user.id;
-  })
-  .define('createEmployee', () => {
-    return Bouncer.deny("You are not authorised to perform this action.", 404)
-  })
 
 /*
 |--------------------------------------------------------------------------
@@ -92,4 +66,6 @@ export const { actions } = Bouncer
 | NOTE: Always export the "policies" const from this file
 |****************************************************************
 */
-export const { policies } = Bouncer.registerPolicies({})
+export const { policies } = Bouncer.registerPolicies({
+  EmployeePolicy: () => import('App/Policies/EmployeePolicy')
+})

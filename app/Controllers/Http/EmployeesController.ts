@@ -5,7 +5,7 @@ import {rules, schema} from "@ioc:Adonis/Core/Validator";
 export default class EmployeesController {
   public async index({ bouncer }: HttpContextContract) {
     try {
-      await bouncer.authorize('getEmployees')
+      await bouncer.with('EmployeePolicy').authorize('index')
       return Employee
         .query()
         .preload("role")
@@ -21,7 +21,7 @@ export default class EmployeesController {
   }
 
   public async store({ request, bouncer }: HttpContextContract) {
-    await bouncer.authorize('createEmployee')
+    await bouncer.with('EmployeePolicy').authorize('create')
 
     const data = request.only(['role_id', 'firstname', 'lastname', 'email', 'branch_id', 'manager_id', 'password']);
 
@@ -39,7 +39,7 @@ export default class EmployeesController {
     try {
       const employee = await Employee.findOrFail(params.id);
 
-      if (await bouncer.denies('getEmployee', employee)) {
+      if (await bouncer.with('EmployeePolicy').denies('view', employee)) {
         return {
           status: false,
           error: true,

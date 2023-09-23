@@ -24,8 +24,8 @@ export default class EmployeePolicy extends BasePolicy {
 	public async create(_: Employee) {
     return Bouncer.deny("You are not authorised to perform this action.", 404)
   }
-	public async view(employee: Employee, user: Employee) {
-    return employee.id === user.id;
+	public async view(employee: Employee, userId) {
+    return employee.id === userId;
   }
 	public async update(employee: Employee, user: Employee) {
     return employee.id === user.id;

@@ -36,18 +36,17 @@ export default class EmployeesController {
   }
 
   public async show({ params, bouncer }: HttpContextContract) {
+    if (await bouncer.with('EmployeePolicy').denies('view', params.id)) {
+      return {
+        status: false,
+        error: true,
+        code: "UNAUTHORIZED",
+        message: "You are not authorized to get information"
+      }
+    }
+
     try {
       const employee = await Employee.findOrFail(params.id);
-
-      if (await bouncer.with('EmployeePolicy').denies('view', employee)) {
-        return {
-          status: false,
-          error: true,
-          code: "UNAUTHORIZED",
-          message: "You are not authorized to get information"
-        }
-      }
-
       return {
         status: true,
         message: "Employee details fetched",

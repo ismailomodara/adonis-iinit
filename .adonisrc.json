@@ -28,7 +28,8 @@
     "@adonisjs/lucid",
     "@adonisjs/attachment-lite",
     "@adonisjs/auth",
-    "@adonisjs/bouncer"
+    "@adonisjs/bouncer",
+    "@adonisjs/redis"
   ],
   "metaFiles": [
     {

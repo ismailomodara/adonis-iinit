@@ -18,7 +18,13 @@ export default class AuthController {
     const { email: uid, password } = request.only(["email", "password"]);
 
     try {
-      return await auth.attempt(uid, password);
+      const token =  await auth.attempt(uid, password);
+      const user = await Employee.query().where('email', uid)
+
+      return {
+        token,
+        user
+      }
     } catch (e) {
       return "Your username or password is incorrect"
     }

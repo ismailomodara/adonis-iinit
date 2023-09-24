@@ -47,10 +47,14 @@ export default class EmployeesController {
 
     try {
       const employee = await Employee.findOrFail(params.id);
+      const permissions = await Employee.getPermissions(employee.roleId);
       return {
         status: true,
         message: "Employee details fetched",
-        data: employee
+        data: {
+          employee,
+          permissions: permissions && permissions[0].permissions
+        }
       }
     } catch (e) {
       return {

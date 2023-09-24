@@ -1,5 +1,5 @@
 import {DateTime} from 'luxon'
-import {BaseModel, beforeSave, belongsTo, BelongsTo, column, computed, hasMany, HasMany} from '@ioc:Adonis/Lucid/Orm'
+import {BaseModel, beforeSave, belongsTo, BelongsTo, column, hasMany, HasMany} from '@ioc:Adonis/Lucid/Orm'
 import {attachment, AttachmentContract} from "@ioc:Adonis/Addons/AttachmentLite"
 import Branch from "App/Models/Branch";
 import Status from "App/Models/Status";
@@ -38,11 +38,6 @@ export default class Employee extends BaseModel {
 
   @column({ columnName: 'branch_id' })
   public branchId: number
-
-  @computed()
-  public get permissions() {
-    return {}
-  }
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
@@ -83,5 +78,11 @@ export default class Employee extends BaseModel {
   public async sendVerificationMail() {
     const token = await Token.generateToken(this, "VERIFICATION");
     await new Verify(this, token).sendLater();
+  }
+
+  public static async getPermissions (role: number) {
+    return Role.query()
+      .where("id", role)
+      .preload("permissions")
   }
 }
